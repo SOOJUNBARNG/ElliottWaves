@@ -20,11 +20,11 @@ import seaborn as sns
 
 # %%
 # PLOTTING SETUP
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format='retina'")
-register_matplotlib_converters()
-sns.set(style='whitegrid', palette='muted', font_scale=1.5)
-rcParams['figure.figsize'] = 22, 10
+# get_ipython().run_line_magic('matplotlib', 'inline')
+# get_ipython().run_line_magic('config', "InlineBackend.figure_format='retina'")
+# register_matplotlib_converters()
+# sns.set(style='whitegrid', palette='muted', font_scale=1.5)
+# rcParams['figure.figsize'] = 22, 10
 
 # %%
 # COMMODITY
@@ -57,7 +57,7 @@ def download(symbol, date, days=365):
                 end=date, 
                 data_source='yahoo')
     df_source['Date'] = df_source.index
-    df_source = df_source.drop(columns=['Adj Close'])
+    df_source = df_source.drop(columns=['Adj close'])
     return df_source
 
 
@@ -70,10 +70,10 @@ def minmaxTwoMeasures(df, measureMin, measureMax, column, order=2):
     # import matplotlib.pyplot as plt
 
     # x = np.array(df["Date"].values)
-    df['DateTmp'] = df.index
+    df.loc[:, 'DateTmp'] = df.index
     x = np.array(df["DateTmp"].values)
-    y1 = np.array(df[measureMin].values)
-    y2 = np.array(df[measureMax].values)
+    y1 = np.array(df["low"].values)
+    y2 = np.array(df["high"].values)
 
     # sort the data in x and rearrange y accordingly
     sortId = np.argsort(x)
@@ -81,7 +81,7 @@ def minmaxTwoMeasures(df, measureMin, measureMax, column, order=2):
     y1 = y1[sortId]
     y2 = y2[sortId]
 
-    df[column] = 0
+    df.loc[:, column] = 0
 
     # this way the x-axis corresponds to the index of x
     maxm = signal.argrelextrema(y2, np.greater, order=order)  # (array([1, 3, 6]),)
@@ -256,11 +256,17 @@ def ElliottWaveDiscovery(df, measure):
 
     waves = []
     for i0 in minRange(df,0,len(df)):
+        print(i0)
         for i1 in maxRange(df,i0+1,len(df)):
+            print(i1)
             for i2 in minRange(df,i1+1,len(df)):
+                print(i2)
                 for i3 in maxRange(df,i2+1,len(df)):
+                    print(i3)
                     for i4 in minRange(df,i3+1,len(df)):
+                        print(i4)
                         for i5 in maxRange(df,i4+1,len(df)):
+                            print(i5)
 
                             isi5TheTop = df[measure].iat[i5] > df[measure].iat[i1] and df[measure].iat[i5] > df[measure].iat[i2] and df[measure].iat[i5] > df[measure].iat[i3] and df[measure].iat[i5] > df[measure].iat[i4]  
                             if isi5TheTop:
@@ -283,14 +289,14 @@ def draw_wave(df,df_waves,w):
     fig = plt.figure()
     ax = fig.add_subplot(111)
 
-    ax.plot(df['Close'],       label='Close', color="blue", linestyle="-", alpha=0.5)
-    ax.plot(df_waves['Close'], label='Close', color="black", linestyle="-", alpha = 0.5)
+    ax.plot(df['close'],       label='close', color="blue", linestyle="-", alpha=0.5)
+    ax.plot(df_waves['close'], label='close', color="black", linestyle="-", alpha = 0.5)
 
-    ax.plot(df_waves['Close'], 'ko', markevery=None)
+    ax.plot(df_waves['close'], 'ko', markevery=None)
 
-    df_waves["wave"] = None
+    df_waves.loc[:, "wave"] = None
     for i in range(0,len(w)):
-            df_waves['wave'].iat[w[i]] = df_waves['Close'].iat[w[i]]
+            df_waves['wave'].iat[w[i]] = df_waves['close'].iat[w[i]]
 
     df_filtered_waves = df_waves.loc[pd.notnull(df_waves.wave)]
     ax.plot(df_filtered_waves['wave'], color="red", linewidth=3.0)
@@ -454,11 +460,11 @@ def findBestFitWaveChain(df_waves, waveChainDict):
 if date is None:
     date = dt.datetime.now().strftime("%Y-%m-%d")
 # default: it will download just the last year
-df_source = download(symbol, date, 365*5)
-# df_source = a.process(df_source)
+# df_source = download(symbol, date, 365*5)
+df_source = pd.read_csv('./input_data/4188_mitsubishi.csv')
 
 # the dataset
-df_source["Date"] = pd.to_datetime(df_source["Date"], infer_datetime_format=True)
+df_source["Date"] = pd.to_datetime(df_source["time"], errors="coerce")
 df_source.set_index("Date")
 # print(df_source.head(5))
 
@@ -468,7 +474,7 @@ df_source.set_index("Date")
 # # df = df_source.loc[df_source.Date <= today].tail(30*6)
 # # df.set_index("Date")
 
-# value = "Close"
+# value = "close"
 
 # useCache = False
 # # granularity (days)
@@ -482,15 +488,15 @@ df_source.set_index("Date")
 # df.set_index("Date")
 
 # #  find min and max
-# # FlowMinMax = analysis_science.minmax(df,"Close","FlowMinMax",period)
+# # FlowMinMax = analysis_science.minmax(df,"close","FlowMinMax",period)
 # FlowMinMax = minmaxTwoMeasures(df,"Low","High","FlowMinMax",period)
 
 # df = FlowMinMax
 # df_waves = df.loc[df['FlowMinMax'] != 0]
 
-# # print(df_waves[["Close","FlowMinMax"]].tail(40))
+# # print(df_waves[["close","FlowMinMax"]].tail(40))
 # print("start ", len(FlowMinMax))
-# waves =  ElliottWaveDiscovery(df_waves[["Close","FlowMinMax"]])
+# waves =  ElliottWaveDiscovery(df_waves[["close","FlowMinMax"]])
 # # import json
 # # with open('waves.txt', 'r') as f:
 # #     waves = json.loads(f.read())
@@ -591,7 +597,7 @@ def ElliottWaveFindPattern(df_source, measure, granularity, dateStart, dateEnd, 
     df.set_index("Date")
 
     #  find min and max
-    FlowMinMax = minmaxTwoMeasures(df,"Close","Close","FlowMinMax",granularity)
+    FlowMinMax = minmaxTwoMeasures(df,"close","high","FlowMinMax",granularity)
 
     df = FlowMinMax
     df_samples = df.loc[df['FlowMinMax'] != 0]
@@ -619,13 +625,14 @@ def ElliottWaveFindPattern(df_source, measure, granularity, dateStart, dateEnd, 
         print(result)
         draw_wave(df, df_samples, result)
 
+    # df_waves = df[[value,"FlowMinMax"]]
     chainSet = buildWaveChainSet(filtered_waves)
     bestChain = findBestFitWaveChain(df_waves, chainSet)
     print("chainset best fit",len(chainSet))
     print(bestChain)
     draw_wave(df, df_samples, bestChain)
 
-ElliottWaveFindPattern(df_source, "Close", 7, "2019-03-01", today, extremes=False)
+ElliottWaveFindPattern(df_source, "close", 7, "2019-03-01", today, extremes=False)
     
 # %%
 # def findBestFitWave(df,value,waves):
