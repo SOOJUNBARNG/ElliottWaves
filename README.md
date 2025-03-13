@@ -85,3 +85,6 @@ This code first plots the 'Close' prices from your DataFrame. It then loops over
 
 Please note that this is a basic example and may need to be adjusted based on the exact structure of your waves data and your specific visualization needs.
 
+## INSTALLING SharpStock
+
+https://chatgpt.com/share/67d24df8-6b54-8001-a2c7-77f21bc39341

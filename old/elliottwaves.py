@@ -60,8 +60,6 @@ def download(symbol, date, days=365):
     df_source = df_source.drop(columns=['Adj close'])
     return df_source
 
-
-
 # %%
 def minmaxTwoMeasures(df, measureMin, measureMax, column, order=2):
     # import numpy as np
@@ -216,30 +214,6 @@ def isElliottWave(df,value,i0,i1,i2,i3,i4,i5,ia,ib,ic):
 
     return result 
 
-# def ElliottWaveDiscovery(df,measure):
-
-#     waves = []
-#     for i0 in range(0,len(df)):
-#         for i1 in range(i0+1,len(df)):
-#             for i2 in range(i1+1,len(df)):
-#                 for i3 in range(i2+1,len(df)):
-#                     for i4 in range(i3+1,len(df)):
-#                         for i5 in range(i4+1,len(df)):
-
-#                             isi5TheTop = df[measure].iat[i5] > df[measure].iat[i1] and df[measure].iat[i5] > df[measure].iat[i2] and df[measure].iat[i5] > df[measure].iat[i3] and df[measure].iat[i5] > df[measure].iat[i4]  
-#                             if isi5TheTop:
-
-#                                 for ia in range(i5+1,len(df)):
-#                                     for ib in range(ia+1,len(df)):
-#                                         for ic in range(ib+1,len(df)):
-#                                             wave = isElliottWave(df,measure,i0,i1,i2,i3,i4,i5,ia,ib,ic)
-#                                             if wave is None:
-#                                                 continue
-#                                             if not wave in waves:
-#                                                 waves.append(wave)
-#                                                 print(wave)
-
-#     return waves
 
 def ElliottWaveDiscovery(df, measure):
 
